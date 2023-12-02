@@ -46,21 +46,6 @@ const EditQuote: React.FC<EditQuoteProps> = ({ history }) => {
         }
     };
 
-    const handleDelete = async () => {
-        if (!quote) return;
-
-        try {
-            await axiosApi.delete(`/quotes/${quote.id}.json`);
-            history.push('/');
-        } catch (error) {
-            console.error('Error deleting quote:', error);
-        }
-    };
-
-    if (!quote) {
-        return <div>Loading...</div>;
-    }
-
     return (
         <div className="container mt-4">
             <h2 className="mb-4">Edit Quote</h2>
@@ -87,9 +72,6 @@ const EditQuote: React.FC<EditQuoteProps> = ({ history }) => {
                 </div>
                 <button type="button" className="btn btn-primary" onClick={handleSaveChanges}>
                     Save Changes
-                </button>
-                <button type="button" className="btn btn-danger ml-2" onClick={handleDelete}>
-                    Delete Quote
                 </button>
             </form>
         </div>

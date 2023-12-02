@@ -1,4 +1,4 @@
-    export interface Quote {
+export interface Quote {
     id: string;
     author: string;
     category: string;
