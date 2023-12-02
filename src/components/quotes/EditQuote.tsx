@@ -1,14 +1,13 @@
+
 import React, { useState, useEffect } from 'react';
 import axiosApi from '../../firebaseService';
-import { useParams } from 'react-router-dom';
-import { History } from 'history'; // Импортируем History из 'history'
+import { useParams, useNavigate } from 'react-router-dom';
 import { Quote } from '../../types';
 
-interface EditQuoteProps {
-    history: History;
-}
+interface EditQuoteProps {}
 
-const EditQuote: React.FC<EditQuoteProps> = ({ history }) => {
+const EditQuote: React.FC<EditQuoteProps> = () => {
+    const navigate = useNavigate(); // Инициализация объекта navigate
     const { id } = useParams<{ id: string }>();
 
     const [quote, setQuote] = useState<Quote | null>(null);
@@ -40,7 +39,7 @@ const EditQuote: React.FC<EditQuoteProps> = ({ history }) => {
         try {
             await axiosApi.put(`/quotes/${quote.id}.json`, { author, text });
             setQuote((prevQuote) => (prevQuote ? { ...prevQuote, author, text } : null));
-            history.push('/');
+            navigate('/');
         } catch (error) {
             console.error('Error updating quote:', error);
         }
