@@ -1,4 +1,3 @@
-// QuoteList.tsx
 import React, { useState, useEffect } from 'react';
 import axiosApi from '../../firebaseService';
 import { Quote } from '../../types';

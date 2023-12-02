@@ -1,13 +1,15 @@
-// EditQuote.tsx
 import React, { useState, useEffect } from 'react';
 import axiosApi from '../../firebaseService';
 import { useParams } from 'react-router-dom';
-import { useHistory } from 'history'; // Импортируем useHistory из 'history'
+import { History } from 'history'; // Импортируем History из 'history'
 import { Quote } from '../../types';
 
-const EditQuote: React.FC = () => {
+interface EditQuoteProps {
+    history: History;
+}
+
+const EditQuote: React.FC<EditQuoteProps> = ({ history }) => {
     const { id } = useParams<{ id: string }>();
-    const history = useHistory();
 
     const [quote, setQuote] = useState<Quote | null>(null);
     const [author, setAuthor] = useState('');
@@ -37,12 +39,21 @@ const EditQuote: React.FC = () => {
 
         try {
             await axiosApi.put(`/quotes/${quote.id}.json`, { author, text });
-            // Обновляем цитату в списке
             setQuote((prevQuote) => (prevQuote ? { ...prevQuote, author, text } : null));
-            // Используем history для перенаправления пользователя
             history.push('/');
         } catch (error) {
             console.error('Error updating quote:', error);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!quote) return;
+
+        try {
+            await axiosApi.delete(`/quotes/${quote.id}.json`);
+            history.push('/');
+        } catch (error) {
+            console.error('Error deleting quote:', error);
         }
     };
 
@@ -76,6 +87,9 @@ const EditQuote: React.FC = () => {
                 </div>
                 <button type="button" className="btn btn-primary" onClick={handleSaveChanges}>
                     Save Changes
+                </button>
+                <button type="button" className="btn btn-danger ml-2" onClick={handleDelete}>
+                    Delete Quote
                 </button>
             </form>
         </div>
