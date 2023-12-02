@@ -3,14 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import axiosApi from '../../firebaseService';
 import { Quote } from '../../types';
-import {Link} from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 interface QuoteListProps {
     onEditQuote: (quoteId: string) => void;
 }
 
-const QuoteList: React.FC<QuoteListProps> = ({ onEditQuote }) => {
+const QuoteList: React.FC<QuoteListProps> = () => {
     const [quotes, setQuotes] = useState<Quote[]>([]);
+    const [categories, setCategories] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>('');
 
     useEffect(() => {
@@ -37,7 +38,23 @@ const QuoteList: React.FC<QuoteListProps> = ({ onEditQuote }) => {
             }
         };
 
+        const fetchCategories = async () => {
+            try {
+                // Запрос к вашему API для получения категорий
+                const response = await axiosApi.get('/categories.json');
+
+                if (response.status === 200 && response.data) {
+                    // Преобразование объекта категорий в массив строк
+                    const categoriesArray: string[] = Object.values(response.data);
+                    setCategories(categoriesArray);
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error);
+            }
+        };
+
         fetchQuotes();
+        fetchCategories();
     }, [selectedCategory]);
 
     const handleCategoryChange = (category: string) => {
@@ -64,7 +81,18 @@ const QuoteList: React.FC<QuoteListProps> = ({ onEditQuote }) => {
             {/* Компонент для выбора категории */}
             <div className="mb-4">
                 <label className="mr-2">Filter by Category:</label>
-                {/* ... (ваш существующий код) */}
+                <select
+                    className="form-control"
+                    value={selectedCategory}
+                    onChange={(e) => handleCategoryChange(e.target.value)}
+                >
+                    <option value="">All Categories</option>
+                    {categories.map((cat) => (
+                        <option key={cat} value={cat}>
+                            {cat}
+                        </option>
+                    ))}
+                </select>
             </div>
 
             {quotes.length === 0 ? (
@@ -76,13 +104,10 @@ const QuoteList: React.FC<QuoteListProps> = ({ onEditQuote }) => {
                             <strong>{quote.author}</strong>
                             <p className="mb-0">{quote.text}</p>
                             {/* Используйте Link для перехода на страницу редактирования */}
-                            <   Link to={`/edit-quote/${quote.id}`} className="btn btn-primary mr-2">
+                            <Link to={`/edit-quote/${quote.id}`} className="btn btn-primary mr-2">
                                 Edit
                             </Link>
-                            <button
-                                className="btn btn-danger"
-                                onClick={() => handleDeleteQuote(quote.id)}
-                            >
+                            <button className="btn btn-danger" onClick={() => handleDeleteQuote(quote.id)}>
                                 Delete
                             </button>
                         </li>
